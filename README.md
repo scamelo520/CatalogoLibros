@@ -1,6 +1,6 @@
 <h1 align="center"> Catalogo De Libros </h1>
 
-<p align="center"> <img width="561" height="433" alt="image" src="https://png.pngtree.com/png-vector/20220630/ourlarge/pngtree-money-changer-logo-iconvector-white-concept-finance-vector-png-image_37464202.png" /> </p>
+<p align="center"> <img width="561" height="433" alt="image" src="https://github.com/user-attachments/assets/270abaf5-f10d-4542-915b-d4d494ca3684" /> </p>
 
 Aplicación de consola desarrollada en Java con Spring Boot para gestionar un catálogo de libros. Permite a los usuarios buscar libros por título en una API externa, registrar la información en una base de datos local y realizar consultas sobre los libros, autores, idiomas disponibles y top 10 de los libros más descargados.
 
@@ -51,17 +51,10 @@ Las principales funcionalidades de la aplicación son:
 La aplicación también maneja los siguientes casos:
 
 *   Búsqueda de libros que no existen en la API.
+
+   <img width="564" height="264" alt="8" src="https://github.com/user-attachments/assets/273d0557-08e7-46e6-87c6-bd8f1310a197" />
+   
 *   Intento de insertar el mismo libro varias veces en la base de datos.
-
-- `Conversión de Divisas`: Convierte entre un conjunto predefinido de monedas (USD, EUR, BRL, COP).
-  
-  <img width="561" height="433" alt="image" src="https://github.com/user-attachments/assets/7d2e5804-5a82-43c8-a278-3f5982a8ad98" />
-
-- `API ExchangeRate-API`: Obtiene las tasas de cambio actualizadas directamente desde la API ExchangeRate-API.
-
-  <img width="564" height="264" alt="8" src="https://github.com/user-attachments/assets/273d0557-08e7-46e6-87c6-bd8f1310a197" />
-
-- `Manejo de Errores`: Incluye manejo de excepciones para entradas inválidas del usuario (InputMismatchException) y errores de conexión a la API.
 
   <img width="538" height="68" alt="9" src="https://github.com/user-attachments/assets/3ce75efc-f66c-4e13-8042-1f8961dd9c28" />
 
@@ -96,7 +89,7 @@ Asegúrate de tener instalado en tu equipo lo siguiente:
     - Git: Sistema de control de versiones utilizado para gestionar el código fuente del proyecto.
     - Gutendex API: API REST utilizada para obtener información sobre libros.
       
-Tecnologías adicionales:
+- Tecnologías adicionales:
 
     - IntelliJ IDEA/Eclipse/NetBeans: Entornos de desarrollo integrados (IDEs) utilizados para desarrollar la aplicación.
     - Jackson: Librería de Java utilizada para serializar y deserializar objetos JSON.
