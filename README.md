@@ -68,7 +68,7 @@ Asegúrate de tener instalado en tu equipo lo siguiente:
   - PostgreSQL: Puedes descargarlo desde https://www.postgresql.org/download/.
    
 ## 🛠️ Abre y ejecuta el proyecto
-1. Clona este repositorio: git clone [[URL del repositorio](https://github.com/scamelo520/Conversor-de-Monedas.git)]
+1. Clona este repositorio: git clone [[URL del repositorio](https://github.com/scamelo520/CatalogoLibros.git)]
 2. Abre el proyecto en tu IDE Java preferido [IntelliJ IDEA, Eclipse, etc.(las intrucciones serán con IntelliJ)]
 3. Configurar Base de Datos:
    - Crea una base de datos en PostgreSQL con el nombre que hayas configurado en tu archivo application.properties
