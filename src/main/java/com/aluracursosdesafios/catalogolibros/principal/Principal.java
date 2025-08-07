@@ -7,6 +7,7 @@ import com.aluracursosdesafios.catalogolibros.service.ConsumoApi;
 import com.aluracursosdesafios.catalogolibros.service.ConvierteDatos;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -22,8 +23,6 @@ public class Principal {
 
     private Scanner teclado = new Scanner(System.in);
 
-    private List<Libros> libros;
-
     @Autowired
     private ILibroRepository libroRepository;
 
@@ -35,8 +34,9 @@ public class Principal {
         var datosLibros = conversor.obtenerDatos(json, Datos.class);
 
         var opcion = -1;
-        while (opcion != 0){
-            var menu = """
+        try {
+            while (opcion < 7){
+                var menu = """
                     ---------------
                     Elija una opción del menú:
                     1 - Buscar libro por titulo
@@ -49,45 +49,61 @@ public class Principal {
                     
                     """;
 
-            System.out.println(menu);
-            opcion = teclado.nextInt();
-            teclado.nextLine();
+                System.out.println(menu);
+                opcion = teclado.nextInt();
+                teclado.nextLine();
 
-            switch (opcion){
-                case 1:
-                    libroPorTitulo();
-                    break;
-                case 2:
-                    librosRegistrados();
-                    break;
-                case 3:
-                    autoresRegistrados();
-                    break;
-                case 4:
-                    autoresVivosPorRangoFecha();
-                    break;
+                switch (opcion){
+                    case 1:
+                        libroPorTitulo();
+                        break;
+                    case 2:
+                        librosRegistrados();
+                        break;
+                    case 3:
+                        autoresRegistrados();
+                        break;
+                    case 4:
+                        autoresVivosPorRangoFecha();
+                        break;
+                    case 5:
+                        librosPorIdioma();
+                        break;
+                    case 6:
+                        top10LibrosMasDescargados();
+                        break;
+                }
             }
+            System.out.println("La opción seleccionada no se encuentra en el menú");
+        }catch (InputMismatchException e){
+            System.out.println("La opción digitada no es valida: " +e.getMessage());
+        }
+    }
 
+    private void top10LibrosMasDescargados() {
+        List<Libros> top10Libros = libroRepository.findTop10ByOrderByNumeroDeDescargasDesc();
+        System.out.println("\n--TOP 10 LIBROS MAS DESCARGADOS--\n");
+        top10Libros.forEach(System.out::println);
+    }
+
+    private void librosPorIdioma() {
+        System.out.println("Ingrese el idioma de los libros que desea buscar:\n" +
+                "es - español\n" +
+                "en - inglés\n" +
+                "fr - francés\n" +
+                "pt - portugués\n");
+        var idiomaEscogido = teclado.nextLine();
+
+        List<Libros> librosIdioma = libroRepository.librosPorIdioma(idiomaEscogido);
+
+        if (librosIdioma.size() > 0){
+            System.out.println("\nEl total de libros con idioma("+idiomaEscogido+") es: " +librosIdioma.size()+"\n");
+            System.out.println("---LIBROS POR IDIOMA("+idiomaEscogido+")-----\n");
+            librosIdioma.forEach(System.out::println);
+        }else {
+            System.out.println("\nEl idioma escogido no tiene libros en nuestro sistema\n");
         }
 
-
-
-//        //Top 10 libros mas descargados
-//        System.out.println("\nTop 10 libros mas descargados");
-//        datosLibros.listaLibros().stream()
-//                .sorted(Comparator.comparing(DatosLibros::numeroDeDescargas).reversed())
-//                .limit(10)
-//                .map(l->l.titulo().toUpperCase())
-//                .forEach(System.out::println);
-//
-//        //Estadisticas
-//        System.out.println("\nEstadisticas");
-//        IntSummaryStatistics est = datosLibros.listaLibros().stream()
-//                .filter(l->l.numeroDeDescargas()>0)
-//                .collect(Collectors.summarizingInt(DatosLibros::numeroDeDescargas));
-//        System.out.println("Numero mayor de descargas por libro: " +est.getMax());
-//        System.out.println("Numero menor de descargas por libro: " +est.getMin());
-//        System.out.println("Total de registros analizados: " +est.getCount());
     }
 
     private void autoresVivosPorRangoFecha() {
@@ -127,31 +143,34 @@ public class Principal {
     private Datos libroPorTitulo() {
         System.out.println("Ingrese el nombre del libro que desea buscar");
         var busqueda = teclado.nextLine();
-        var json = consumoApi.obtenerDatos(URL_BASE + "?search=" + busqueda.replace(" ", "+"));
+        System.out.println("Ingrese uno de los siguientes idiomas del libro que desea buscar:\n" +
+                "es - español\n" +
+                "en - inglés\n" +
+                "fr - francés\n" +
+                "pt - portugués\n");
+        var idiomalibro = teclado.nextLine();
+        var json = consumoApi.obtenerDatos(URL_BASE + "?search=" + busqueda.replace(" ", "+")+"&lang="+idiomalibro);
         var datosLibros = conversor.obtenerDatos(json, Datos.class);
 
         Optional<DatosLibros> libroBuscado = datosLibros.listaLibros().stream()
                 .filter(l -> l.titulo().toUpperCase().contains(busqueda.toUpperCase()))
                 .findFirst();
 
-        if (libroBuscado.isPresent()){
-            DatosLibros datoslibro = libroBuscado.get();
-            Autor autor = obtenerAutor(datoslibro);
-            String idioma = obtenerPrimerIdioma(datoslibro.idioma());
+        try{
+            if (libroBuscado.isPresent()){
+                DatosLibros datoslibro = libroBuscado.get();
+                Autor autor = obtenerAutor(datoslibro);
+                String idioma = obtenerPrimerIdioma(datoslibro.idioma());
 
-            Libros libros = new Libros(datoslibro.titulo(), autor, idioma, datoslibro.numeroDeDescargas());
+                Libros libros = new Libros(datoslibro.titulo(), autor, idioma, datoslibro.numeroDeDescargas());
 
-            System.out.println(libros);
-
-            libroRepository.save(libros);
-
-//            // Establecer la relación entre el libro y los autores
-//            for (Autor autor : autores) {
-//                autor.setLibros(libros); // Establecer la relación
-//            }
-
-        }else {
-            System.out.println("Libro no encontrado");
+                System.out.println(libros);
+                libroRepository.save(libros);
+            }else {
+                System.out.println("Libro no encontrado");
+            }
+        }catch (DataIntegrityViolationException e){
+            System.out.println("No se puede registrar el mismo libro más de una vez");
         }
         return null;
     }
